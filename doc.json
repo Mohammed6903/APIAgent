@@ -1,0 +1,923 @@
+{                                                                                                                                                                         
+    "/resume-analysis-results": {                                                                                                                                         
+        "method": "GET",                                                                                                                                                  
+        "description": "Endpoint to retrieve the resume analysis results from resume_analysis_results.json.",                                                             
+        "parameters": {},                                                                                                                                                 
+        "response": {                                                                                                                                                     
+            "200": {                                                                                                                                                      
+                "description": "Successful response with resume analysis results",                                                                                        
+                "content": "application/json"                                                                                                                             
+            },                                                                                                                                                            
+            "404": {                                                                                                                                                      
+                "description": "Resume analysis results file not found",                                                                                                  
+                "content": "application/json"                                                                                                                             
+            },                                                                                                                                                            
+            "500": {                                                                                                                                                      
+                "description": "Error retrieving resume analysis results",                                                                                                
+                "content": "application/json"                                                                                                                             
+            }                                                                                                                                                             
+        }                                                                                                                                                                 
+    },                                                                                                                                                                    
+    "/resume-analyze": {                                                                                                                                                  
+        "method": "WEBSOCKET",                                                                                                                                            
+        "description": "WebSocket endpoint for real-time resume analysis.",                                                                                               
+        "parameters": {                                                                                                                                                   
+            "file": {                                                                                                                                                     
+                "type": "bytes",                                                                                                                                          
+                "description": "Resume file content sent in chunks."                                                                                                      
+            },                                                                                                                                                            
+            "filename":{                                                                                                                                                  
+                "type": "str",                                                                                                                                            
+                "description": "Resume filename, will default to 'uploaded_resume.pdf' if not provided"                                                                   
+            }                                                                                                                                                             
+        },                                                                                                                                                                
+        "response": {                                                                                                                                                     
+            "200": {                                                                                                                                                      
+                "description": "Successful analysis with detailed resume profile.",                                                                                       
+                "content": "application/json",                                                                                                                            
+                "schema": {                                                                                                                                               
+                    "type": "object",                                                                                                                                     
+                    "properties": {                                                                                                                                       
+                        "contact_info": {                                                                                                                                 
+                            "type": "object",                                                                                                                             
+                            "description": "Candidate's contact information"                                                                                              
+                        },                                                                                                                                                
+                        "education": {                                                                                                                                    
+                            "type": "array",                                                                                                                              
+                            "description": "Educational background"                                                                                                       
+                        },                                                                                                                                                
+                        "work_experience": {                                                                                                                              
+                            "type": "array",                                                                                                                              
+                            "description": "Professional work history"                                                                                                    
+                        },                                                                                                                                                
+                        "skills": {                                                                                                                                       
+                            "type": "object",                                                                                                                             
+                            "description": "Technical and soft skills"                                                                                                    
+                        },                                                                                                                                                
+                        "summary": {                                                                                                                                      
+                            "type": "string",                                                                                                                             
+                            "description": "Professional summary or objective"                                                                                            
+                        },                                                                                                                                                
+                        "projects": {                                                                                                                                     
+                            "type": "array",                                                                                                                              
+                            "description": "Notable projects"                                                                                                             
+                        },                                                                                                                                                
+                        "achievements": {                                                                                                                                 
+                            "type": "object",                                                                                                                             
+                            "description": "Professional and personal achievements"                                                                                       
+                        }                                                                                                                                                 
+                    }                                                                                                                                                     
+                }                                                                                                                                                         
+            },                                                                                                                                                            
+            "500": {                                                                                                                                                      
+                "description": "Error processing resume",                                                                                                                 
+                "content": "text/plain"                                                                                                                                   
+            }                                                                                                                                                             
+        }                                                                                                                                                                 
+    },                                                                                                                                                                    
+    "/multi-upload": {                                                                                                                                                    
+        "method": "WEBSOCKET",                                                                                                                                            
+        "description": "WebSocket endpoint for multiple file uploads and analysis.",                                                                                      
+        "parameters": {                                                                                                                                                   
+            "file": {                                                                                                                                                     
+                "type": "bytes",                                                                                                                                          
+                "description": "File content sent in chunks."                                                                                                             
+            },                                                                                                                                                            
+            "num_files": {                                                                                                                                                
+                "type": "integer",                                                                                                                                        
+                "description": "Number of files to be uploaded"                                                                                                           
+            },                                                                                                                                                            
+            "filename": {                                                                                                                                                 
+                "type": "string",                                                                                                                                         
+                "description": "Filename of uploaded files"                                                                                                               
+            }                                                                                                                                                             
+        },                                                                                                                                                                
+        "response": {                                                                                                                                                     
+            "200": {                                                                                                                                                      
+                "description": "Successful analysis with aggregated results.",                                                                                            
+                "content": "application/json",                                                                                                                            
+                "schema": {                                                                                                                                               
+                    "type": "object",                                                                                                                                     
+                    "properties": {                                                                                                                                       
+                        "filename": {                                                                                                                                     
+                            "type": "object",                                                                                                                             
+                            "description": "Resume Data"                                                                                                                  
+                        }                                                                                                                                                 
+                    }                                                                                                                                                     
+                }                                                                                                                                                         
+            },                                                                                                                                                            
+            "500": {                                                                                                                                                      
+                "description": "Error processing files",                                                                                                                  
+                "content": "text/plain"                                                                                                                                   
+            }                                                                                                                                                             
+        }                                                                                                                                                                 
+    },                                                                                                                                                                    
+    "/rank-resumes": {                                                                                                                                                    
+        "method": "POST",                                                                                                                                                 
+        "description": "Endpoint to rank resumes against a job description.",                                                                                             
+        "parameters": {                                                                                                                                                   
+            "body": {                                                                                                                                                     
+                "model": "JobDescriptionRequest",                                                                                                                         
+                "description": "Job description and resumes file.",                                                                                                       
+                "schema": {                                                                                                                                               
+                    "type": "object",                                                                                                                                     
+                    "properties": {                                                                                                                                       
+                        "job_description": {                                                                                                                              
+                            "type": "string",                                                                                                                             
+                            "description": "Job description"                                                                                                              
+                        },                                                                                                                                                
+                        "resumes_file": {                                                                                                                                 
+                            "type": "string",                                                                                                                             
+                            "description": "Resumes file",                                                                                                                
+                            "default": "resume_analysis_results.json"                                                                                                     
+                        }                                                                                                                                                 
+                    },                                                                                                                                                    
+                    "required": [                                                                                                                                         
+                        "job_description"                                                                                                                                 
+                    ]                                                                                                                                                     
+                }                                                                                                                                                         
+            }                                                                                                                                                             
+        },                                                                                                                                                                
+        "response": {                                                                                                                                                     
+            "200": {                                                                                                                                                      
+                "description": "Successful ranking with ranked resumes.",                                                                                                 
+                "content": "application/json",                                                                                                                            
+                "schema": {                                                                                                                                               
+                    "type": "object",                                                                                                                                     
+                    "properties": {                                                                                                                                       
+                        "ranking_method": {                                                                                                                               
+                            "type": "string",                                                                                                                             
+                            "description": "Ranking method used"                                                                                                          
+                        },                                                                                                                                                
+                        "ranked_resumes": {                                                                                                                               
+                            "type": "array",                                                                                                                              
+                            "description": "Ranked resumes",                                                                                                              
+                            "items": {                                                                                                                                    
+                                "type": "object"                                                                                                                          
+                            }                                                                                                                                             
+                        }                                                                                                                                                 
+                    }                                                                                                                                                     
+                }                                                                                                                                                         
+            },                                                                                                                                                            
+            "500": {                                                                                                                                                      
+                "description": "Error ranking resumes",                                                                                                                   
+                "content": "application/json"                                                                                                                             
+            }                                                                                                                                                             
+        }                                                                                                                                                                 
+    },                                                                                                                                                                    
+    "/selected-personnel/upload": {                                                                                                                                       
+        "method": "POST",                                                                                                                                                 
+        "description": "Endpoint to upload a selected personnel's resume to the selected candidates pool.",                                                               
+        "parameters": {                                                                                                                                                   
+            "body": {                                                                                                                                                     
+                "model": "SelectedPersonnel",                                                                                                                             
+                "description": "Selected personnel data.",                                                                                                                
+                "schema": {                                                                                                                                              
+                    "type": "object",                                                                                                                                     
+                    "properties": {                                                                                                                                       
+                        "resume_id": {                                                                                                                                    
+                            "type": "string",                                                                                                                             
+                            "description": "Unique identifier for the resume"                                                                                             
+                        },                                                                                                                                                
+                        "profile": {                                                                                                                                      
+                            "type": "object",                                                                                                                             
+                            "description": "The complete resume profile in JSON format"                                                                                   
+                        },                                                                                                                                                
+                        "selection_reason": {                                                                                                                             
+                            "type": "string",                                                                                                                             
+                            "description": "Reason for selection"                                                                                                         
+                        },                                                                                                                                                
+                        "selection_date": {                                                                                                                               
+                            "type": "string",                                                                                                                             
+                            "description": "Date when the candidate was selected"                                                                                         
+                        }                                                                                                                                                 
+                    },                                                                                                                                                    
+                    "required": [                                                                                                                                         
+                        "resume_id",                                                                                                                                      
+                        "profile",                                                                                                                                        
+                        "selection_date"                                                                                                                                  
+                    ]                                                                                                                                                     
+                }                                                                                                                                                         
+            }                                                                                                                                                             
+        },                                                                                                                                                                
+        "response": {                                                                                                                                                     
+            "200": {                                                                                                                                                      
+                "description": "Successful upload message.",                                                                                                              
+                "content": "application/json",                                                                                                                            
+                "schema": {                                                                                                                                               
+                    "type": "object",                                                                                                                                     
+                    "properties": {                                                                                                                                       
+                        "status": {                                                                                                                                       
+                            "type": "string",                                                                                                                             
+                            "description": "Status of the upload"                                                                                                         
+                        },                                                                                                                                                
+                        "message": {                                                                                                                                      
+                            "type": "string",                                                                                                                             
+                            "description": "Upload message"                                                                                                               
+                        }                                                                                                                                                 
+                    }                                                                                                                                                     
+                }                                                                                                                                                         
+            },                                                                                                                                                            
+            "500": {                                                                                                                                                      
+                "description": "Error uploading selected personnel",                                                                                                      
+                "content": "application/json"                                                                                                                             
+            }                                                                                                                                                             
+        }                                                                                                                                                                 
+    },                                                                                                                                                                    
+    "/selected-personnel": {                                                                                                                                              
+        "method": "GET",                                                                                                                                                  
+        "description": "Endpoint to retrieve all selected personnel.",                                                                                                    
+        "parameters": {},                                                                                                                                                 
+        "response": {                                                                                                                                                     
+            "200": {                                                                                                                                                      
+                "description": "Successful retrieval of selected personnel.",                                                                                             
+                "content": "application/json",                                                                                                                            
+                "schema": {                                                                                                                                               
+                    "type": "object",                                                                                                                                     
+                    "properties": {                                                                                                                                       
+                        "resume_id": {                                                                                                                                   
+                            "type": "string",                                                                                                                             
+                            "description": "Unique identifier for the resume"                                                                                             
+                        },                                                                                                                                                
+                        "profile": {                                                                                                                                      
+                            "type": "object",                                                                                                                             
+                            "description": "The complete resume profile in JSON format"                                                                                   
+                        },                                                                                                                                                
+                        "selection_reason": {                                                                                                                             
+                            "type": "string",                                                                                                                             
+                            "description": "Reason for selection"                                                                                                         
+                        },                                                                                                                                                
+                        "selection_date": {                                                                                                                               
+                            "type": "string",                                                                                                                             
+                            "description": "Date when the candidate was selected"                                                                                         
+                        }                                                                                                                                                 
+                    }                                                                                                                                                     
+                }                                                                                                                                                         
+            },                                                                                                                                                            
+            "500": {                                                                                                                                                      
+                "description": "Error retrieving selected personnel",                                                                                                     
+                "content": "application/json"                                                                                                                             
+            }                                                                                                                                                             
+        }                                                                                                                                                                 
+    },                                                                                                                                                                    
+    "/generate-chart-data": {                                                                                                                                             
+        "method": "GET",                                                                                                                                                  
+        "description": "Generate aggregated chart data from all resumes and save to chart.json",                                                                          
+        "parameters": {},                                                                                                                                                 
+        "response": {                                                                                                                                                     
+            "200": {                                                                                                                                                      
+                "description": "Successful chart data generation.",                                                                                                       
+                "content": "application/json",                                                                                                                            
+                "schema": {                                                                                                                                               
+                    "type": "object",                                                                                                                                     
+                    "properties": {                                                                                                                                       
+                        "message": {                                                                                                                                      
+                            "type": "string",                                                                                                                             
+                            "description": "Success message"                                                                                                              
+                        },                                                                                                                                                
+                        "chart_data": {                                                                                                                                   
+                            "type": "object",                                                                                                                             
+                            "description": "Generated chart data"                                                                                                         
+                        }                                                                                                                                                 
+                    }                                                                                                                                                     
+                }                                                                                                                                                         
+            },                                                                                                                                                            
+            "404": {                                                                                                                                                      
+                "description": "No resume data available for analysis",                                                                                                   
+                "content": "application/json"                                                                                                                             
+            },                                                                                                                                                            
+            "500": {                                                                                                                                                      
+                "description": "Error generating chart data",                                                                                                             
+                "content": "application/json"                                                                                                                             
+            }                                                                                                                                                             
+        }                                                                                                                                                                 
+    },                                                                                                                                                                    
+    "/bias-analysis": {                                                                                                                                                   
+        "method": "POST",                                                                                                                                                 
+        "description": "Endpoint to analyze potential biases in the selection process using Gemini.",                                                                     
+        "parameters": {                                                                                                                                                   
+            "body": {                                                                                                                                                     
+                "model": "BiasAnalysisRequest",                                                                                                                           
+                "description": "Bias analysis request data.",                                                                                                             
+                "schema": {                                                                                                                                              
+                    "type": "object",                                                                                                                                     
+                    "properties": {                                                                                                                                       
+                        "job_title": {                                                                                                                                    
+                            "type": "string",                                                                                                                             
+                            "description": "Job title for which bias analysis is needed"                                                                                  
+                        },                                                                                                                                                
+                        "job_description": {                                                                                                                              
+                            "type": "string",                                                                                                                             
+                            "description": "Complete job description"                                                                                                     
+                        },                                                                                                                                                
+                        "analysis_types": {                                                                                                                               
+                            "type": "array",                                                                                                                              
+                            "items": {                                                                                                                                    
+                                "type": "string"                                                                                                                          
+                            },                                                                                                                                            
+                            "default": [                                                                                                                                  
+                                "gender",                                                                                                                                 
+                                "age",                                                                                                                                    
+                                "ethnicity",                                                                                                                              
+                                "education",                                                                                                                              
+                                "experience"                                                                                                                              
+                            ],                                                                                                                                            
+                            "description": "Types of biases to analyze"                                                                                                   
+                        }                                                                                                                                                 
+                    },                                                                                                                                                    
+                    "required": [                                                                                                                                         
+                        "job_title",                                                                                                                                      
+                        "job_description"                                                                                                                                 
+                    ]                                                                                                                                                     
+                }                                                                                                                                                         
+            }                                                                                                                                                             
+        },                                                                                                                                                                
+        "response": {                                                                                                                                                     
+            "200": {                                                                                                                                                      
+                "description": "Successful bias analysis with results.",                                                                                                  
+                "content": "application/json",                                                                                                                            
+                "schema": {                                                                                                                                               
+                    "type": "object",                                                                                                                                     
+                    "properties": {                                                                                                                                       
+                        "summary": {                                                                                                                                      
+                            "type": "string",                                                                                                                             
+                            "description": "Overall summary of the bias analysis"                                                                                         
+                        },                                                                                                                                                
+                        "fairness_score": {                                                                                                                               
+                            "type": "number",                                                                                                                             
+                            "description": "A score from 1-10"                                                                                                            
+                        },                                                                                                                                                
+                        "bias_metrics": {                                                                                                                                 
+                            "type": "object",                                                                                                                             
+                            "description": "Metrics for each bias type"                                                                                                   
+                        },                                                                                                                                                
+                        "recommendations": {                                                                                                                              
+                            "type": "array",                                                                                                                              
+                            "items": {                                                                                                                                    
+                                "type": "string"                                                                                                                          
+                            },                                                                                                                                            
+                            "description": "Recommendations to improve fairness"                                                                                          
+                        }                                                                                                                                                 
+                    }                                                                                                                                                     
+                }                                                                                                                                                         
+            },                                                                                                                                                            
+            "404": {                                                                                                                                                      
+                "description": "No selected personnel found for analysis",                                                                                                
+                "content": "application/json"                                                                                                                             
+            },                                                                                                                                                            
+            "500": {                                                                                                                                                      
+                "description": "Error analyzing bias",                                                                                                                    
+                "content": "application/json"                                                                                                                             
+            }                                                                                                                                                             
+        }                                                                                                                                                                 
+    },                                                                                                                                                                    
+    "/send-email/individual": {                                                                                                                                           
+        "method": "POST",                                                                                                                                                 
+        "description": "Endpoint to send an email to a single candidate from ranked resumes",                                                                             
+        "parameters": {                                                                                                                                                   
+            "body": {                                                                                                                                                     
+                "description": "Request body containing ranked resumes, candidate index, sender email, and password.",                                                    
+                "schema": {                                                                                                                                               
+                    "type": "object",                                                                                                                                     
+                    "properties": {                                                                                                                                       
+                        "ranked_resumes": {                                                                                                                               
+                            "type": "array",                                                                                                                              
+                            "description": "Array of ranked resumes"                                                                                                      
+                        },                                                                                                                                                
+                        "candidate_index": {                                                                                                                              
+                            "type": "integer",                                                                                                                            
+                            "description": "Index of the candidate to send the email to"                                                                                  
+                        },                                                                                                                                                
+                        "sender_email": {                                                                                                                                 
+                            "type": "string",                                                                                                                             
+                            "description": "Email address of the sender"                                                                                                  
+                        },                                                                                                                                                
+                        "password": {                                                                                                                                     
+                            "type": "string",                                                                                                                             
+                            "description": "Password for the sender email"                                                                                                
+                        },                                                                                                                                                
+                        "job_description": {                                                                                                                             
+                            "type": "string",                                                                                                                             
+                            "description": "Job description"                                                                                                              
+                        },                                                                                                                                                
+                        "project_options": {                                                                                                                              
+                            "type": "array",                                                                                                                              
+                            "description": "Project Options",                                                                                                             
+                            "items": {                                                                                                                                   
+                                "type": "object"                                                                                                                          
+                            }                                                                                                                                             
+                        },                                                                                                                                                
+                        "company_info": {                                                                                                                                 
+                            "type": "object",                                                                                                                             
+                            "description": "Company information",                                                                                                         
+                            "properties":{                                                                                                                               
+                                "name":{                                                                                                                                 
+                                    "type": "string",                                                                                                                    
+                                    "description": "Name of the company"                                                                                                 
+                                },                                                                                                                                       
+                                "contact_email":{                                                                                                                       
+                                    "type": "string",                                                                                                                    
+                                    "description": "Contact email of the company"                                                                                        
+                                },                                                                                                                                       
+                                "website":{                                                                                                                             
+                                    "type": "string",                                                                                                                    
+                                    "description": "Website of the company"                                                                                              
+                                }                                                                                                                                        
+                            }                                                                                                                                            
+                        }                                                                                                                                                 
+                    },                                                                                                                                                    
+                    "required": [                                                                                                                                         
+                        "ranked_resumes",                                                                                                                                 
+                        "candidate_index",                                                                                                                                
+                        "sender_email",                                                                                                                                   
+                        "password"                                                                                                                                        
+                    ]                                                                                                                                                     
+                }                                                                                                                                                         
+            }                                                                                                                                                             
+        },                                                                                                                                                                
+        "response": {                                                                                                                                                     
+            "200": {                                                                                                                                                      
+                "description": "Successful email sending",                                                                                                                
+                "content": "application/json",                                                                                                                            
+                "schema": {                                                                                                                                               
+                    "type": "object",                                                                                                                                     
+                    "properties": {                                                                                                                                       
+                        "status": {                                                                                                                                       
+                            "type": "string",                                                                                                                             
+                            "description": "Status of the email sending"                                                                                                  
+                        },                                                                                                                                                
+                        "message": {                                                                                                                                      
+                            "type": "string",                                                                                                                             
+                            "description": "Message indicating the result of the email sending"                                                                           
+                        }                                                                                                                                                 
+                    }                                                                                                                                                     
+                }                                                                                                                                                         
+            },                                                                                                                                                            
+            "400": {                                                                                                                                                      
+                "description": "Bad Request",                                                                                                                             
+                "content": "application/json"                                                                                                                             
+            },                                                                                                                                                            
+            "500": {                                                                                                                                                      
+                "description": "Error sending individual email",                                                                                                          
+                "content": "application/json"                                                                                                                             
+            }                                                                                                                                                             
+        }                                                                                                                                                                 
+    },                                                                                                                                                                    
+    "/send-email/bulk": {                                                                                                                                                 
+        "method": "POST",                                                                                                                                                 
+        "description": "Endpoint to send emails to all candidates from ranked resumes",                                                                                   
+        "parameters": {                                                                                                                                                   
+            "body": {                                                                                                                                                     
+                "description": "Request body containing ranked resumes, sender email, and password.",                                                                     
+                "schema": {                                                                                                                                               
+                    "type": "object",                                                                                                                                     
+                    "properties": {                                                                                                                                       
+                        "ranked_resumes": {                                                                                                                               
+                            "type": "array",                                                                                                                              
+                            "description": "Array of ranked resumes"                                                                                                      
+                        },                                                                                                                                                
+                        "sender_email": {                                                                                                                                 
+                            "type": "string",                                                                                                                             
+                            "description": "Email address of the sender"                                                                                                  
+                        },                                                                                                                                                
+                        "password": {                                                                                                                                     
+                            "type": "string",                                                                                                                             
+                            "description": "Password for the sender email"                                                                                                
+                        },                                                                                                                                                
+                        "job_description": {                                                                                                                              
+                            "type": "string",                                                                                                                             
+                            "description": "Job description"                                                                                                              
+                        },                                                                                                                                                
+                        "project_options": {                                                                                                                              
+                            "type": "array",                                                                                                                              
+                            "description": "Project Options",                                                                                                             
+                            "items": {                                                                                                                                   
+                                "type": "object"                                                                                                                          
+                            }                                                                                                                                             
+                        },                                                                                                                                                
+                        "company_info": {                                                                                                                                 
+                            "type": "object",                                                                                                                             
+                            "description": "Company information",                                                                                                         
+                            "properties":{                                                                                                                               
+                                "name":{                                                                                                                                 
+                                    "type": "string",                                                                                                                    
+                                    "description": "Name of the company"                                                                                                 
+                                },                                                                                                                                       
+                                "contact_email":{                                                                                                                       
+                                    "type": "string",                                                                                                                    
+                                    "description": "Contact email of the company"                                                                                        
+                                },                                                                                                                                       
+                                "website":{                                                                                                                             
+                                    "type": "string",                                                                                                                    
+                                    "description": "Website of the company"                                                                                              
+                                }                                                                                                                                        
+                            }                                                                                                                                            
+                        }                                                                                                                                                 
+                    },                                                                                                                                                    
+                    "required": [                                                                                                                                         
+                        "ranked_resumes"                                                                                                                                  
+                    ]                                                                                                                                                     
+                }                                                                                                                                                         
+            }                                                                                                                                                             
+        },                                                                                                                                                                
+        "response": {                                                                                                                                                     
+            "200": {                                                                                                                                                      
+                "description": "Successful bulk email sending",                                                                                                           
+                "content": "application/json",                                                                                                                            
+                "schema": {                                                                                                                                               
+                    "type": "object",                                                                                                                                     
+                    "properties": {                                                                                                                                       
+                        "status": {                                                                                                                                       
+                            "type": "string",                                                                                                                             
+                            "description": "Status of the bulk email sending"                                                                                             
+                        },                                                                                                                                                
+                        "summary": {                                                                                                                                      
+                            "type": "string",                                                                                                                             
+                            "description": "Summary of the bulk email sending"                                                                                            
+                        },                                                                                                                                                
+                        "detailed_results": {                                                                                                                             
+                            "type": "object",                                                                                                                             
+                            "description": "Detailed results of each email sending"                                                                                       
+                        }                                                                                                                                                 
+                    }                                                                                                                                                     
+                }                                                                                                                                                         
+            },                                                                                                                                                            
+            "400": {                                                                                                                                                      
+                "description": "Bad Request",                                                                                                                             
+                "content": "application/json"                                                                                                                             
+            },                                                                                                                                                            
+            "500": {                                                                                                                                                      
+                "description": "Error sending bulk emails",                                                                                                               
+                "content": "application/json"                                                                                                                             
+            }                                                                                                                                                             
+        }                                                                                                                                                                 
+    },                                                                                                                                                                    
+    "/process_url_or_path": {                                                                                                                                             
+        "method": "POST",                                                                                                                                                 
+        "description": "Endpoint to process a URL or local file path.",                                                                                                   
+        "parameters": {                                                                                                                                                   
+            "input_path": {                                                                                                                                               
+                "type": "string",                                                                                                                                         
+                "description": "URL or local file path to process",                                                                                                       
+                "in": "body",                                                                                                                                             
+                "required": true                                                                                                                                          
+            },                                                                                                                                                            
+            "compressed": {                                                                                                                                               
+                "type": "boolean",                                                                                                                                        
+                "description": "Flag indicating whether to return the compressed version of the file.",                                                                   
+                "in": "body",                                                                                                                                             
+                "default": false                                                                                                                                          
+            }                                                                                                                                                             
+        },                                                                                                                                                                
+        "response": {                                                                                                                                                     
+            "200": {                                                                                                                                                      
+                "description": "Successfully processed the URL or path.",                                                                                                 
+                "content": "text/plain",                                                                                                                                  
+                "schema": {                                                                                                                                               
+                    "type": "string",                                                                                                                                     
+                    "description": "Content of the processed file"                                                                                                        
+                }                                                                                                                                                         
+            },                                                                                                                                                            
+            "404": {                                                                                                                                                      
+                "description": "File not found",                                                                                                                          
+                "content": "application/json"                                                                                                                             
+            },                                                                                                                                                            
+            "500": {                                                                                                                                                      
+                "description": "Error processing the URL or path",                                                                                                        
+                "content": "application/json"                                                                                                                             
+            }                                                                                                                                                             
+        }                                                                                                                                                                 
+    },                                                                                                                                                                    
+    "/analyze_project/": {                                                                                                                                               
+        "method": "POST",                                                                                                                                                 
+        "description": "Endpoint to analyze a project based on its code or documentation using Gemini.",                                                                  
+        "parameters": {                                                                                                                                                   
+            "input_path": {                                                                                                                                               
+                "type": "string",                                                                                                                                         
+                "description": "URL or local file path to process",                                                                                                       
+                "in": "body",                                                                                                                                             
+                "required": true                                                                                                                                          
+            }                                                                                                                                                             
+        },                                                                                                                                                                
+        "response": {                                                                                                                                                     
+            "200": {                                                                                                                                                      
+                "description": "Successfully analyzed project",                                                                                                           
+                "content": "application/json",                                                                                                                            
+                "schema": {                                                                                                                                               
+                    "type": "object",                                                                                                                                     
+                    "properties": {                                                                                                                                       
+                        "summary": {                                                                                                                                      
+                            "type": "string",                                                                                                                             
+                            "description": "Project summary"                                                                                                              
+                        },                                                                                                                                                
+                        "structure": {                                                                                                                                    
+                            "type": "string",                                                                                                                             
+                            "description": "Description of project structure"                                                                                             
+                        },                                                                                                                                                
+                        "technologies": {                                                                                                                                 
+                            "type": "array",                                                                                                                              
+                            "items": {                                                                                                                                    
+                                "type": "string"                                                                                                                          
+                            },                                                                                                                                            
+                            "description": "List of technologies used"                                                                                                    
+                        },                                                                                                                                                
+                        "languages": {                                                                                                                                    
+                            "type": "array",                                                                                                                              
+                            "items": {                                                                                                                                    
+                                "type": "string"                                                                                                                          
+                            },                                                                                                                                            
+                            "description": "List of languages used"                                                                                                       
+                        },                                                                                                                                                
+                        "libraries": {                                                                                                                                    
+                            "type": "array",                                                                                                                              
+                            "items": {                                                                                                                                    
+                                "type": "string"                                                                                                                          
+                            },                                                                                                                                            
+                            "description": "List of libraries used"                                                                                                       
+                        },                                                                                                                                                
+                        "important_files": {                                                                                                                              
+                            "type": "array",                                                                                                                              
+                            "items": {                                                                                                                                    
+                                "type": "string"                                                                                                                          
+                            },                                                                                                                                            
+                            "description": "List of important files"                                                                                                      
+                        },                                                                                                                                                
+                        "complex_files": {                                                                                                                                
+                            "type": "array",                                                                                                                              
+                            "items": {                                                                                                                                    
+                                "type": "string"                                                                                                                          
+                            },                                                                                                                                            
+                            "description": "List of complex files"                                                                                                        
+                        },                                                                                                                                                
+                        "improvements": {                                                                                                                                 
+                            "type": "array",                                                                                                                              
+                            "items": {                                                                                                                                    
+                                "type": "string"                                                                                                                          
+                            },                                                                                                                                            
+                            "description": "List of potential improvements"                                                                                               
+                        },                                                                                                                                                
+                        "metrics": {                                                                                                                                      
+                            "type": "object",                                                                                                                             
+                            "properties": {                                                                                                                               
+                                "complexity": {                                                                                                                           
+                                    "type": "string",                                                                                                                     
+                                    "description": "Estimated complexity"                                                                                                 
+                                },                                                                                                                                        
+                                "maintainability": {                                                                                                                      
+                                    "type": "string",                                                                                                                     
+                                    "description": "Estimated maintainability"                                                                                            
+                                },                                                                                                                                        
+                                "code_quality": {                                                                                                                         
+                                    "type": "string",                                                                                                                     
+                                    "description": "Estimated code quality"                                                                                               
+                                }                                                                                                                                         
+                            },                                                                                                                                            
+                            "description": "Project metrics"                                                                                                              
+                        },                                                                                                                                                
+                        "issues": {                                                                                                                                       
+                            "type": "array",                                                                                                                              
+                            "items": {                                                                                                                                    
+                                "type": "string"                                                                                                                          
+                            },                                                                                                                                            
+                            "description": "List of identified issues"                                                                                                    
+                        }                                                                                                                                                 
+                    }                                                                                                                                                     
+                }                                                                                                                                                         
+            },                                                                                                                                                            
+            "404": {                                                                                                                                                      
+                "description": "File not found",                                                                                                                          
+                "content": "application/json"                                                                                                                             
+            },                                                                                                                                                            
+            "500": {                                                                                                                                                      
+                "description": "Error analyzing project",                                                                                                                 
+                "content": "application/json"                                                                                                                             
+            }                                                                                                                                                             
+        }                                                                                                                                                                 
+    },                                                                                                                                                                    
+    "/get_file/{file_name}": {                                                                                                                                            
+        "method": "GET",                                                                                                                                                  
+        "description": "Endpoint to get a file by its name.",                                                                                                             
+        "parameters": {                                                                                                                                                   
+            "file_name": {                                                                                                                                                
+                "type": "string",                                                                                                                                         
+                "description": "Name of the file to retrieve",                                                                                                            
+                "in": "path",                                                                                                                                             
+                "required": true                                                                                                                                          
+            }                                                                                                                                                             
+        },                                                                                                                                                                
+        "response": {                                                                                                                                                     
+            "200": {                                                                                                                                                      
+                "description": "Successfully retrieved the file.",                                                                                                        
+                "content": "text/plain",                                                                                                                                  
+                "schema": {                                                                                                                                               
+                    "type": "string",                                                                                                                                     
+                    "description": "Content of the file"                                                                                                                  
+                }                                                                                                                                                         
+            },                                                                                                                                                            
+            "404": {                                                                                                                                                      
+                "description": "File not found",                                                                                                                          
+                "content": "application/json"                                                                                                                             
+            }                                                                                                                                                             
+        }                                                                                                                                                                 
+    },                                                                                                                                                                    
+    "/process_upload/": {                                                                                                                                                
+        "method": "POST",                                                                                                                                                 
+        "description": "Endpoint to process an uploaded file.",                                                                                                           
+        "parameters": {                                                                                                                                                   
+            "file": {                                                                                                                                                     
+                "type": "file",                                                                                                                                           
+                "description": "File to upload and process",                                                                                                              
+                "in": "form",                                                                                                                                             
+                "required": true                                                                                                                                          
+            }                                                                                                                                                             
+        },                                                                                                                                                                
+        "response": {                                                                                                                                                     
+            "200": {                                                                                                                                                      
+                "description": "Successfully processed the file.",                                                                                                        
+                "content": "application/json",                                                                                                                            
+                "schema": {                                                                                                                                               
+                    "type": "object",                                                                                                                                    
+                    "properties": {                                                                                                                                       
+                        "uncompressed_file":{                                                                                                                             
+                            "type": "string",                                                                                                                             
+                            "description": "Path to the uncompressed file"                                                                                                
+                        },                                                                                                                                                
+                        "compressed_file":{                                                                                                                               
+                            "type": "string",                                                                                                                             
+                            "description": "Path to the compressed file"                                                                                                  
+                        }                                                                                                                                                 
+                    }                                                                                                                                                     
+                }                                                                                                                                                         
+            },                                                                                                                                                            
+            "500": {                                                                                                                                                      
+                "description": "Error processing the file",                                                                                                               
+                "content": "application/json"                                                                                                                             
+            }                                                                                                                                                             
+        }                                                                                                                                                                 
+    },                                                                                                                                                                    
+    "/update_chat_history": {                                                                                                                                             
+        "method": "POST",                                                                                                                                                 
+        "description": "Updates or saves chat history based on the received payload.",                                                                                    
+        "parameters": {                                                                                                                                                   
+            "body": {                                                                                                                                                     
+                "model": "ChatHistoryPayload",                                                                                                                            
+                "description": "Chat history payload.",                                                                                                                   
+                "schema": {                                                                                                                                               
+                    "type": "object",                                                                                                                                     
+                    "properties": {                                                                                                                                       
+                        "conf_uid": {                                                                                                                                     
+                            "type": "string",                                                                                                                             
+                            "description": "Conference UID"                                                                                                               
+                        },                                                                                                                                                
+                        "history_uid": {                                                                                                                                  
+                            "type": "string",                                                                                                                             
+                            "description": "History UID"                                                                                                                  
+                        },                                                                                                                                                
+                        "history": {                                                                                                                                      
+                            "type": "array",                                                                                                                              
+                            "items": {                                                                                                                                    
+                                "type": "object",                                                                                                                         
+                                "properties": {                                                                                                                           
+                                    "role": {                                                                                                                             
+                                        "type": "string",                                                                                                                 
+                                        "description": "Role in the chat"                                                                                                 
+                                    },                                                                                                                                    
+                                    "timestamp": {                                                                                                                        
+                                        "type": "string",                                                                                                                 
+                                        "description": "Timestamp of the message"                                                                                         
+                                    },                                                                                                                                    
+                                    "content": {                                                                                                                          
+                                        "type": "string",                                                                                                                 
+                                        "description": "Content of the message"                                                                                           
+                                    },                                                                                                                                    
+                                    "name": {                                                                                                                             
+                                        "type": "string",                                                                                                                 
+                                        "description": "Name of the participant"                                                                                          
+                                    },                                                                                                                                    
+                                    "avatar": {                                                                                                                          
+                                        "type": "string",                                                                                                                 
+                                        "description": "Avatar of the participant"                                                                                        
+                                    }                                                                                                                                     
+                                }                                                                                                                                         
+                            },                                                                                                                                            
+                            "description": "Chat history items"                                                                                                           
+                        },                                                                                                                                                
+                        "timestamp": {                                                                                                                                    
+                            "type": "string",                                                                                                                             
+                            "description": "Timestamp of the update"                                                                                                      
+                        }                                                                                                                                                 
+                    },                                                                                                                                                    
+                    "required": [                                                                                                                                         
+                        "conf_uid",                                                                                                                                       
+                        "history_uid",                                                                                                                                    
+                        "history",                                                                                                                                        
+                        "timestamp"                                                                                                                                       
+                    ]                                                                                                                                                     
+                }                                                                                                                                                         
+            }                                                                                                                                                             
+        },                                                                                                                                                                
+        "response": {                                                                                                                                                     
+            "200": {                                                                                                                                                      
+                "description": "Chat history updated successfully.",                                                                                                      
+                "content": "application/json",                                                                                                                            
+                "schema": {                                                                                                                                               
+                    "type": "object",                                                                                                                                     
+                    "properties": {                                                                                                                                       
+                        "message": {                                                                                                                                      
+                            "type": "string",                                                                                                                             
+                            "description": "Success message"                                                                                                              
+                        }                                                                                                                                                 
+                    }                                                                                                                                                     
+                }                                                                                                                                                         
+            }                                                                                                                                                             
+        }                                                                                                                                                                 
+    },                                                                                                                                                                    
+    "/get_chat_history": {                                                                                                                                                
+        "method": "GET",                                                                                                                                                  
+        "description": "Retrieves chat history.",                                                                                                                         
+        "parameters": {},                                                                                                                                                 
+        "response": {                                                                                                                                                     
+            "200": {                                                                                                                                                      
+                "description": "Successful retrieval of chat history.",                                                                                                   
+                "content": "application/json",                                                                                                                            
+                "schema": {                                                                                                                                               
+                    "type": "object",                                                                                                                                     
+                    "properties": {                                                                                                                                       
+                        "conf_uid": {                                                                                                                                    
+                            "type": "string",                                                                                                                             
+                            "description": "Conference UID"                                                                                                               
+                        },                                                                                                                                                
+                        "history_uid": {                                                                                                                                  
+                            "type": "string",                                                                                                                             
+                            "description": "History UID"                                                                                                                  
+                        },                                                                                                                                                
+                        "history": {                                                                                                                                      
+                            "type": "array",                                                                                                                              
+                            "items": {                                                                                                                                    
+                                "type": "object",                                                                                                                         
+                                "properties": {                                                                                                                           
+                                    "role": {                                                                                                                             
+                                        "type": "string",                                                                                                                 
+                                        "description": "Role in the chat"                                                                                                 
+                                    },                                                                                                                                    
+                                    "timestamp": {                                                                                                                        
+                                        "type": "string",                                                                                                                 
+                                        "description": "Timestamp of the message"                                                                                         
+                                    },                                                                                                                                    
+                                    "content": {                                                                                                                          
+                                        "type": "string",                                                                                                                 
+                                        "description": "Content of the message"                                                                                           
+                                    },                                                                                                                                    
+                                    "name": {                                                                                                                            
+                                        "type": "string",                                                                                                                 
+                                        "description": "Name of the participant"                                                                                          
+                                    },                                                                                                                                    
+                                    "avatar": {                                                                                                                          
+                                        "type": "string",                                                                                                                 
+                                        "description": "Avatar of the participant"                                                                                        
+                                    }                                                                                                                                     
+                                }                                                                                                                                         
+                            },                                                                                                                                            
+                            "description": "Chat history items"                                                                                                           
+                        },                                                                                                                                                
+                        "timestamp": {                                                                                                                                    
+                            "type": "string",                                                                                                                             
+                            "description": "Timestamp of the update"                                                                                                      
+                        }                                                                                                                                                 
+                    }                                                                                                                                                     
+                }                                                                                                                                                         
+            }                                                                                                                                                             
+        }                                                                                                                                                                 
+    },                                                                                                                                                                    
+    "/analyze_interview": {                                                                                                                                               
+        "method": "POST",                                                                                                                                                 
+        "description": "Analyzes interview chat histories directly from stored data using Gemini.",                                                                       
+        "parameters": {                                                                                                                                                   
+            "history_uid": {                                                                                                                                             
+                "type": "string",                                                                                                                                         
+                "description": "History UID to filter specific interviews",                                                                                               
+                "in": "query",                                                                                                                                            
+                "required": false                                                                                                                                         
+            }                                                                                                                                                             
+        },                                                                                                                                                                
+        "response": {                                                                                                                                                     
+            "200": {                                                                                                                                                      
+                "description": "Successful analysis of interview.",                                                                                                       
+                "content": "application/json",                                                                                                                            
+                "schema": {                                                                                                                                               
+                    "type": "object",                                                                                                                                     
+                    "properties": {                                                                                                                                       
+                        "summary": {                                                                                                                                      
+                            "type": "string",                                                                                                                             
+                            "description": "Interview Analysis Summary"                                                                                                   
+                        }                                                                                                                                                 
+                    }                                                                                                                                                     
+                }                                                                                                                                                         
+            },                                                                                                                                                            
+            "500": {                                                                                                                                                      
+                "description": "Error analyzing interview",                                                                                                               
+                "content": "application/json"                                                                                                                             
+            }                                                                                                                                                             
+        }                                                                                                                                                                 
+    }                                                                                                                                                                     
+}          
