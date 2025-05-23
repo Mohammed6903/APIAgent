@@ -1,5 +1,6 @@
 from agno.agent import Agent
 from agno.models.google import Gemini
+from agno.models.ollama import Ollama
 from agno.team import Team
 from agno.tools.file import FileTools
 from Tools.file import get_dir_tree
@@ -10,7 +11,7 @@ from Documentor import PostProcessingAgent
 tester = Agent(
     name="API Tester",
     role="Tests API endpoints",
-    model=Gemini(id="gemini-2.0-flash"),
+    model=Gemini(id="gemini-2.0-flash-lite"),
     tools=[FileTools(), wrapperforrequests],
     description="You are an API testing tool. You test the APIs and return the results.",
     instructions="""
@@ -25,7 +26,7 @@ tester = Agent(
 documentor = PostProcessingAgent(
     name="API Documentor",
     role="Generates API documentation",
-    model=Gemini(id="gemini-2.0-flash"),
+    model=Gemini(id="gemini-2.0-flash-exp"),
     tools=[FileTools(), get_dir_tree],
     description=dedent("""
         You are an API analysis tool. You generate and save their proper documentations in JSON format in the working directory.
