@@ -49,10 +49,6 @@ def get_dir_tree(base_dir: str, ignore_dirs: Optional[List[str]] = None):
 
     return tree
 
-@tool(
-    name="save_file",
-    description="Save a file with given file_name and contents.",
-)
 def save_file(contents: str, file_name: str, overwrite: bool = True) -> str:
         """Saves the contents to a file called `file_name` and returns the file name if successful.
 
