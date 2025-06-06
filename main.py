@@ -1,23 +1,22 @@
 from agno.agent import Agent
 from agno.models.google import Gemini
-from agno.models.ollama import Ollama
 from agno.team import Team
 from agno.tools.file import FileTools
 from Tools.file import get_dir_tree
 from textwrap import dedent
-from Tools.api import wrapperforrequests
+from Tools.api import APIRequest
 from Documentor import PostProcessingAgent
 
 tester = Agent(
     name="API Tester",
     role="Tests API endpoints",
-    model=Gemini(id="gemini-2.0-flash-lite"),
-    tools=[FileTools(), wrapperforrequests],
+    model=Gemini(id="gemini-2.5-flash-preview-05-20"),
+    tools=[FileTools(), APIRequest],
     description="You are an API testing tool. You test the APIs and return the results.",
     instructions="""
                     You are given an API endpoint, you will test the API and return the results.
-                    You will use the wrapperforrequests tool to test the API.
-                    You will read the API documentation provided by the user using FileTools.
+                    You will use the APIRequest tool to test the API.
+                    You will read the API documentation provided by the user using get requests or retrieving by FileTools().
                     """,
     show_tool_calls=True,
     markdown=True,
@@ -56,16 +55,22 @@ organizer = Team(
     name="API Testing Team",
     mode="coordinate",
     model=Gemini(id="gemini-2.0-flash"),
-    tools=[FileTools(), wrapperforrequests],
+    tools=[FileTools(), APIRequest],
     description="You are a testing team coordinator. Your goal is to test a given api and if there is no documentation present or given for an api, document it.",
     instructions=[
-        "First determine the tech stack of the API by reading some file in project directory.",
+        "If the client is telling that their is an endpoint which contains documentation then use that documentation to test the API.",
+        "Else if he is specifying tech stack and its a stack that automatically generates documentation, then use that documentation to test the API.",
+        "Else, first determine the tech stack of the API by reading some file in project directory.",
         "Then, check if that tech stack gives standard documentation generation like swagger or openapi.",
         "If yes, then use that documentation to test the API.",
         "If no, then ask the documentor member to create a documentation file.",
         "Then, ask the tester member to test the API endpoint using the documentation file. send the file name to the tester member.",
+        "If a documeentation endpoint was given, then let the tester know of its url or endpoint."
         "Now, check if all the endpoints are tested and if there is any endpoint left, ask the tester member to test it.",
+        "After tester member tests given endpoint, do validation of whether all endpoints are tested or not.",
+        "If not tested, then ask the member to do testing of remaining endpoints.",
         "At the end, generate a report of all the endpoints tested and their results."
+        "Write the report in markdown format and save it to a file named 'api_testing_report.md'.",
     ],
     members=[
         documentor,
@@ -74,18 +79,21 @@ organizer = Team(
     add_datetime_to_instructions=True,
     add_member_tools_to_system_message=False,
     enable_agentic_context=True,
+    enable_team_history=True,
+    num_of_interactions_from_history=5,
     share_member_interactions=True,
     show_members_responses=True,
     show_tool_calls=True,
     markdown=True,
 )
 
-organizer.print_response(f"""
-                        test if this api is giving valid response: http://localhost:5000. 
-                        Read its documentation from doc.json in the current directory. 
-                        Valid responses and parameters are provided in that same documentation along with extra info about each endpoint.
-                        Read it carefully.
+organizer.print_response(
+    """
+        Test if this api is giving valid response: http://127.0.0.1:8000. 
+        The documentation is at http://127.0.0.1:8000/openapi.json.
 
-                        Do strict checking, with each field having exact same data type as described by me.  
-                        for post request, if you are getting status of 201, its fine too!""", stream=True
-                    )
+        Do strict checking, with each field having exact same data type as described by the documentation.
+        for post request, if you are getting status of 201, its fine too!
+    """,
+    stream=True,
+)

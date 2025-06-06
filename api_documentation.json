@@ -1,383 +1,96 @@
 {
-  "/resume-analysis-results": {
-    "method": "GET",
-    "description": "Endpoint to retrieve the resume analysis results from resume_analysis_results.json.",
-    "parameters": {},
-    "response": {
-      "status_code": 200,
-      "content": "JSON object containing resume analysis results",
-      "example": "{...}"
-    },
-    "errors": [
-      {
-        "status_code": 404,
-        "description": "Resume analysis results file not found",
-        "content": "{'detail': 'Resume analysis results file not found'}"
-      },
-      {
-        "status_code": 500,
-        "description": "Error retrieving resume analysis results",
-        "content": "{'detail': 'Error retrieving resume analysis results: ...'}"
-      }
-    ]
-  },
-  "/resume-analyze": {
-    "method": "WEBSOCKET",
-    "description": "WebSocket endpoint for real-time resume analysis.",
-    "parameters": {
-      "file_metadata": {
-        "type": "JSON",
-        "description": "Metadata of the uploaded file, including filename.",
-        "example": "{\"filename\": \"uploaded_resume.pdf\"}"
-      },
-      "file_chunk": {
-        "type": "bytes",
-        "description": "Chunks of the resume file being uploaded.",
-        "example": "b'\\x25PDF-1.5...'"
-      }
-    },
-    "response": {
-      "content": "JSON",
-      "description": "Detailed resume analysis in JSON format.",
-      "example": "{...}"
-    },
-    "errors": [
-      {
-        "description": "Error processing resume",
-        "content": "{'detail': 'Error processing resume: ...'}"
-      },
-      {
-        "description": "Unexpected error",
-        "content": "{'detail': 'Unexpected error: ...'}"
-      }
-    ]
-  },
-  "/multi-upload": {
-    "method": "WEBSOCKET",
-    "description": "WebSocket endpoint for uploading multiple resume files.",
-    "parameters": {
-      "file_metadata": {
-        "type": "JSON",
-        "description": "Metadata of the uploaded file, including number of files and filename.",
-        "example": "{\"num_files\": 3, \"filename\": \"resume1.pdf\"}"
-      },
-      "file_chunk": {
-        "type": "bytes",
-        "description": "Chunks of the resume file being uploaded.",
-        "example": "b'\\x25PDF-1.5...'"
-      }
-    },
-    "response": {
-      "content": "JSON",
-      "description": "Compiled results of resume analysis in JSON format.",
-      "example": "{...}"
-    },
-    "errors": [
-      {
-        "description": "Error processing file",
-        "content": "{'detail': 'Error processing file: ...'}"
-      },
-      {
-        "description": "Unexpected error",
-        "content": "{'detail': 'Unexpected error: ...'}"
-      }
-    ]
-  },
-  "/rank-resumes": {
-    "method": "POST",
-    "description": "Endpoint to rank resumes against a job description.",
-    "parameters": {
-      "request": {
-        "type": "JobDescriptionRequest",
-        "description": "JSON containing job description and resumes file.",
-        "example": "{\"job_description\": \"Software Engineer\", \"resumes_file\": \"resume_analysis_results.json\"}"
-      }
-    },
-    "response": {
-      "content": "JSON",
-      "description": "Ranked resumes with matching percentages and reasons.",
-      "example": "{\"ranking_method\": \"Gemini AI\", \"ranked_resumes\": [...]}"
-    },
-    "errors": []
-  },
-  "/selected-personnel/upload": {
-    "method": "POST",
-    "description": "Endpoint to upload a selected personnel's resume to the selected candidates pool.",
-    "parameters": {
-      "personnel": {
-        "type": "SelectedPersonnel",
-        "description": "JSON containing selected personnel information.",
-        "example": "{\"resume_id\": \"123\", \"profile\": {...}, \"selection_reason\": \"Good fit\", \"selection_date\": \"2024-01-01\"}"
-      }
-    },
-    "response": {
-      "content": "JSON",
-      "description": "Status of the upload.",
-      "example": "{\"status\": \"success\", \"message\": \"Personnel with ID 123 added to selected pool\"}"
-    },
-    "errors": [
-      {
-        "status_code": 500,
-        "description": "Error uploading selected personnel",
-        "content": "{'detail': 'Error uploading selected personnel: ...'}"
-      }
-    ]
-  },
-  "/selected-personnel": {
-    "method": "GET",
-    "description": "Endpoint to retrieve all selected personnel.",
-    "parameters": {},
-    "response": {
-      "content": "JSON",
-      "description": "All selected personnel information.",
-      "example": "{...}"
-    },
-    "errors": [
-      {
-        "status_code": 500,
-        "description": "Error retrieving selected personnel",
-        "content": "{'detail': 'Error retrieving selected personnel: ...'}"
-      }
-    ]
-  },
-  "/generate-chart-data": {
-    "method": "GET",
-    "description": "Generate aggregated chart data from all resumes and save to chart.json",
-    "parameters": {},
-    "response": {
-      "content": "JSON",
-      "description": "Aggregated chart data from all resumes.",
-      "example": "{...}"
-    },
-    "errors": [
-      {
-        "status_code": 500,
-        "description": "Error generating chart data",
-        "content": "{'detail': 'Error generating chart data: ...'}"
-      }
-    ]
-  },
-  "/bias-analysis": {
-    "method": "POST",
-    "description": "Endpoint to analyze potential biases in the selection process using Gemini",
-    "parameters": {
-      "request": {
-        "type": "BiasAnalysisRequest",
-        "description": "JSON containing job title, job description, and analysis types.",
-        "example": "{\"job_title\": \"Software Engineer\", \"job_description\": \"...\", \"analysis_types\": [\"gender\", \"age\"]}"
-      }
-    },
-    "response": {
-      "content": "JSON",
-      "description": "Bias analysis results.",
-      "example": "{...}"
-    },
-    "errors": [
-      {
-        "status_code": 500,
-        "description": "Error analyzing bias",
-        "content": "{'detail': 'Error analyzing bias: ...'}"
-      }
-    ]
-  },
-  "/send-email/individual": {
-    "method": "POST",
-    "description": "Endpoint to send an email to a single candidate from ranked resumes",
-    "parameters": {
-      "request": {
-        "type": "dict",
-        "description": "JSON containing ranked resumes, candidate index, sender email, password, job description, project options, company info.",
-        "example": "{\"ranked_resumes\": [...], \"candidate_index\": 0, \"sender_email\": \"...\", \"password\": \"...\", \"job_description\": \"...\", \"project_options\": {...}, \"company_info\": {...}}"
-      }
-    },
-    "response": {
-      "content": "JSON",
-      "description": "Status of the email sending.",
-      "example": "{\"status\": \"success\", \"message\": \"Email sent successfully to ...\"}"
-    },
-    "errors": [
-      {
-        "status_code": 500,
-        "description": "Error sending individual email",
-        "content": "{'detail': 'Error sending individual email: ...'}"
-      }
-    ]
-  },
-  "/send-email/bulk": {
-    "method": "POST",
-    "description": "Endpoint to send emails to all candidates from ranked resumes",
-    "parameters": {
-      "request": {
-        "type": "dict",
-        "description": "JSON containing ranked resumes, sender email, password, job description, project options, company info.",
-        "example": "{\"ranked_resumes\": [...], \"sender_email\": \"...\", \"password\": \"...\", \"job_description\": \"...\", \"project_options\": {...}, \"company_info\": {...}}"
-      }
-    },
-    "response": {
-      "content": "JSON",
-      "description": "Status of the bulk email sending.",
-      "example": "{\"status\": \"completed\", \"summary\": \"Sent emails to ... out of ... candidates\", \"detailed_results\": {...}}"
-    },
-    "errors": [
-      {
-        "status_code": 500,
-        "description": "Error sending bulk emails",
-        "content": "{'detail': 'Error sending bulk emails: ...'}"
-      }
-    ]
-  },
-  "/process_url_or_path": {
-    "method": "POST",
-    "description": "Processes a URL or local file path.",
-    "parameters": {
-      "input_path": {
-        "type": "string",
-        "description": "URL or local path to process.",
-        "example": "https://example.com"
-      },
-        "compressed": {
-          "type": "boolean",
-          "description": "Whether to return the compressed version of the file",
-          "example": "True"
+  "/": {
+    "get": {
+      "description": "Root endpoint",
+      "parameters": {},
+      "responses": {
+        "200": {
+          "description": "Successful response",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Welcome message"
+                  }
+                }
+              }
+            }
+          }
         }
-    },
-    "response": {
-      "content": "text/plain",
-      "description": "Content of the processed URL or file."
-    },
-    "errors": [
-      {
-        "status_code": 404,
-        "description": "File not found.",
-        "content": "{'detail': 'File not found'}"
+      }
+    }
+  },
+  "/items": {
+    "post": {
+      "description": "Create a new item",
+      "parameters": {},
+      "requestBody": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Item name"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Item description"
+                }
+              },
+              "required": [
+                "name"
+              ]
+            }
+          }
+        }
       },
-      {
-        "status_code": 500,
-        "description": "Internal server error.",
-        "content": "{'detail': '...'}"
+      "responses": {
+        "201": {
+          "description": "Item created",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "description": "Item ID"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Item name"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Item description"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "error": {
+                    "type": "string",
+                    "description": "Error message"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
-    ]
-  },
-    "/analyze_project/": {
-    "method": "POST",
-    "description": "Analyzes a project based on its code or documentation using Gemini.",
-    "parameters": {
-      "input_path": {
-        "type": "string",
-        "description": "URL or local path to project code or documentation.",
-        "example": "path/to/project"
-      }
-    },
-    "response": {
-      "content": "application/json",
-      "description": "Detailed project analysis report in JSON format.",
-      "example": "{...}"
-    },
-    "errors": [
-      {
-        "status_code": 404,
-        "description": "File not found.",
-        "content": "{'detail': 'File not found'}"
-      },
-      {
-        "status_code": 500,
-        "description": "Internal server error.",
-        "content": "{'detail': '...'}"
-      }
-    ]
-  },
-  "/get_file/{file_name}": {
-    "method": "GET",
-    "description": "Retrieves a file by name.",
-    "parameters": {
-      "file_name": {
-        "type": "string",
-        "description": "Name of the file to retrieve.",
-        "example": "example.txt"
-      }
-    },
-    "response": {
-      "content": "text/plain",
-      "description": "Content of the requested file."
-    },
-    "errors": [
-      {
-        "status_code": 404,
-        "description": "File not found.",
-        "content": "{'detail': 'File not found'}"
-      }
-    ]
-  },
-  "/process_upload/": {
-    "method": "POST",
-    "description": "Uploads and processes a file.",
-    "parameters": {
-      "file": {
-        "type": "UploadFile",
-        "description": "File to upload.",
-        "example": "example.txt"
-      }
-    },
-    "response": {
-      "content": "application/json",
-      "description": "Result of processing the uploaded file.",
-      "example": "{...}"
-    },
-    "errors": []
-  },
-  "/update_chat_history": {
-    "method": "POST",
-    "description": "Updates or saves chat history based on the received payload.",
-    "parameters": {
-      "payload": {
-        "type": "ChatHistoryPayload",
-        "description": "Payload containing chat history data.",
-        "example": "{...}"
-      }
-    },
-    "response": {
-      "content": "application/json",
-      "description": "Confirmation message.",
-      "example": "{\"message\": \"Chat history updated successfully\"}"
-    },
-    "errors": []
-  },
-  "/get_chat_history": {
-    "method": "GET",
-    "description": "Retrieves chat history.",
-    "parameters": {},
-    "response": {
-      "content": "application/json",
-      "description": "Chat history data.",
-      "example": "{...}"
-    },
-    "errors": []
-  },
-    "/analyze_interview": {
-    "method": "POST",
-    "description": "Analyzes interview chat histories directly from stored data using Gemini.",
-    "parameters": {
-      "history_uid": {
-        "type": "string",
-        "description": "The history UID of the specific conversation to analyze. If not provided, all chat history is analyzed.",
-        "required": false,
-        "example": "user123_interview456"
-      }
-    },
-    "response": {
-      "content": "application/json",
-      "description": "A detailed report including observations on the candidate's skills, communication style, responses to specific questions, and any other relevant insights.",
-      "example": "{...}"
-    },
-    "errors": [
-      {
-        "description": "No matching interview history found",
-        "content": "{\"error\": \"No matching interview history found\"}"
-      },
-      {
-        "description": "Error analyzing interview",
-        "content": "{\"error\": \"Error analyzing interview: ...\"}"
-      }
-    ]
+    }
   }
 }
