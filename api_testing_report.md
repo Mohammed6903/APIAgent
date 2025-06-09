@@ -1,255 +1,71 @@
-API Testing Report
+# API Testing Report - 2025-06-09 19:55:35
 
-Here's the report of the API testing performed on `http://127.0.0.1:8000` based on the provided `openapi.json` documentation.
+### Executive Summary
 
-### Test Results Summary
+This report summarizes the automated testing performed on the API located at `http://127.0.0.1:8000`, using the OpenAPI documentation provided at `http://127.0.0.1:8000/openapi.json`. The testing focused on validating status codes and strictly enforcing data type compliance against the documented schemas for all accessible endpoints.
 
-| Endpoint | Method | Status Code | Expected Status | Result | Notes |
-|---|---|---|---|---|---|
-| `/api/v1/analytics/generate-chart-data` | GET | 200 | 200 | PASS | Successfully retrieved data. |
-| `/api/v1/bias/bias-analysis` | POST | 200 | 200/201 | PASS | Successfully analyzed bias. |
-| `/api/v1/chat/update_chat_history` | POST | 200 | 200/201 | PASS | Successfully updated chat history. |
-| `/api/v1/chat/get_chat_history` | GET | 200 | 200 | PASS | Successfully retrieved chat history. |
-| `/api/v1/email/send-email/individual` | POST | 200 | 200/201 | PASS | Successfully sent individual email (mock). |
-| `/api/v1/email/send-email/bulk` | POST | 200 | 200/201 | PASS | Successfully sent bulk emails (mock). |
-| `/api/v1/file/get_file/test.txt` | GET | 200 | 200 | PASS | Successfully retrieved file (mock). |
-| `/api/v1/interview/analyze_interview` | POST | 200 | 200/201 | PASS | Successfully analyzed interview (mock). |
-| `/api/v1/personnel/selected-personnel/upload` | POST | 200 | 200/201 | PASS | Successfully uploaded selected personnel (mock). |
-| `/api/v1/personnel/selected-personnel` | GET | 200 | 200 | PASS | Successfully retrieved selected personnel. |
-| `/api/v1/project/process_url_or_path` | POST | 200 | 200/201 | PASS | Successfully processed URL/path (mock). |
-| `/api/v1/project/analyze_project/` | POST | 200 | 200/201 | PASS | Successfully analyzed project (mock). |
-| `/api/v1/project/process_upload/` | POST | 422 | 200/201 | FAIL | Validation Error: Invalid file format (expected binary, got string). |
-| `/api/v1/resume/resume-analysis-results` | GET | 200 | 200 | PASS | Successfully retrieved resume analysis results. |
-| `/api/v1/resume/rank-resumes` | POST | 200 | 200/201 | PASS | Successfully ranked resumes (mock). |
-| `/api/v1/resume/rank-resumes` | OPTIONS | 200 | 200 | PASS | Successfully handled OPTIONS request. |
+A total of **16** endpoints were identified from the OpenAPI documentation. **15** endpoints were attempted for testing. One endpoint (`/api/v1/project/process_upload/` POST) could not be fully tested due to limitations in sending `multipart/form-data` with a binary file using the available tools, resulting in a validation error (422).
 
-### Detailed Test Results
+The testing revealed a significant discrepancy between the documented response schemas and the actual API responses for successful operations (status code 200). For almost all endpoints returning a 200 status, the OpenAPI documentation specified an empty object `{}` as the response schema, while the API returned complex JSON objects or arrays. This indicates that the documentation is outdated or inaccurate regarding the structure of successful responses, preventing strict data type validation from passing even when the API returned a successful status code and valid JSON content.
 
-#### 1. GET /api/v1/analytics/generate-chart-data
+Additionally, specific endpoint failures were observed:
+- A GET request to `/api/v1/file/get_file/{file_name}` with a placeholder name returned a 404 Not Found error.
+- A POST request to `/api/v1/email/send-email/individual` resulted in a 500 Internal Server Error.
+- The POST request to `/api/v1/project/process_upload/` failed with a 422 Validation Error due to an inability to provide the required file upload payload.
 
-*   **Method:** GET
-*   **URL:** `http://127.0.0.1:8000/api/v1/analytics/generate-chart-data`
-*   **Status Code:** 200
-*   **Expected Status:** 200
-*   **Result:** PASS
-*   **Notes:** The request was successful, and the API returned a 200 OK status.
+Overall, while most endpoints returned a 200 status code when expected (indicating functional success), the widespread data type mismatches highlight critical issues with the accuracy of the API documentation. The observed status code errors on specific endpoints also warrant further investigation.
 
-#### 2. POST /api/v1/bias/bias-analysis
+### Endpoint Testing Results
 
-*   **Method:** POST
-*   **URL:** `http://127.0.0.1:8000/api/v1/bias/bias-analysis`
-*   **Request Body (Generated):**
-    ```json
-    {
-        "job_title": "Software Engineer",
-        "job_description": "Develop and maintain software applications.",
-        "analysis_types": ["gender", "age"]
-    }
-    ```
-*   **Status Code:** 200
-*   **Expected Status:** 200 or 201
-*   **Result:** PASS
-*   **Notes:** The request was successful, and the API returned a 200 OK status.
+| Endpoint                                    | Method  | Status Code Received | Expected Status Code | Status Validation | Data Type Validation | Specific Issues/Notes                                                                                                |
+| :------------------------------------------ | :------ | :------------------- | :------------------- | :---------------- | :------------------- | :------------------------------------------------------------------------------------------------------------------- |
+| `/api/v1/analytics/generate-chart-data`     | GET     | 200                  | 200/201              | Passed            | Mismatch             | Expected `{}`, Received valid JSON (strict validation limited by empty schema).                                      |
+| `/api/v1/chat/get_chat_history`             | GET     | 200                  | 200/201              | Passed            | Mismatch             | Expected `{}`, Received valid JSON (strict validation limited by empty schema).                                      |
+| `/api/v1/personnel/selected-personnel`      | GET     | 200                  | 200/201              | Passed            | Mismatch             | Expected `{}`, Received `[]` (array).                                                                                |
+| `/api/v1/resume/resume-analysis-results`  | GET     | 200                  | 200/201              | Passed            | Mismatch             | Expected `{}`, Received `{...}` (object with properties).                                                            |
+| `/api/v1/file/get_file/{file_name}`         | GET     | 404                  | 200/201              | Failed            | N/A                  | Tested with `test.txt`. Resource not found.                                                                          |
+| `/api/v1/resume/rank-resumes`               | OPTIONS | 200                  | 200/201              | Passed            | Match                | Expected `{}`, Received `{}`.                                                                                        |
+| `/api/v1/bias/bias-analysis`                | POST    | 200                  | 200/201              | Passed            | Mismatch             | Expected `{}`, Received complex object.                                                                              |
+| `/api/v1/chat/update_chat_history`          | POST    | 200                  | 200/201              | Passed            | Mismatch             | Expected `{}`, Received object with properties.                                                                      |
+| `/api/v1/email/send-email/individual`       | POST    | 500                  | 200/201              | Failed            | N/A                  | Internal Server Error.                                                                                               |
+| `/api/v1/email/send-email/bulk`             | POST    | 200                  | 200/201              | Passed            | Mismatch             | Expected `{}`, Received object with properties.                                                                      |
+| `/api/v1/interview/analyze_interview`       | POST    | 200                  | 200/201              | Passed            | Mismatch             | Expected `{}`, Received complex nested object.                                                                       |
+| `/api/v1/personnel/selected-personnel/upload`| POST    | 200                  | 200/201              | Passed            | Mismatch             | Expected `{}`, Received object. Re-tested successfully after correcting URL.                                         |
+| `/api/v1/project/process_url_or_path`       | POST    | 200                  | 200/201              | Passed            | Mismatch             | Expected `{}`, Received object/dictionary.                                                                           |
+| `/api/v1/project/analyze_project/`          | POST    | 200                  | 200/201              | Passed            | Mismatch             | Expected `{}`, Received complex object.                                                                              |
+| `/api/v1/project/process_upload/`           | POST    | 422                  | 200/201              | Failed            | N/A                  | Validation Error (missing required file upload payload). Tool limitation noted for `multipart/form-data`.            |
+| `/api/v1/resume/rank-resumes`               | POST    | 200                  | 200/201              | Passed            | Mismatch             | Expected `{}`, Received complex object.                                                                              |
 
-#### 3. POST /api/v1/chat/update_chat_history
+### Data Type Compliance Issues
 
-*   **Method:** POST
-*   **URL:** `http://127.0.0.1:8000/api/v1/chat/update_chat_history`
-*   **Request Body (Generated):**
-    ```json
-    {
-        "conf_uid": "conf123",
-        "history_uid": "hist456",
-        "history": [
-            {
-                "role": "user",
-                "timestamp": "2023-01-01T10:00:00Z",
-                "content": "Hello",
-                "name": "John Doe",
-                "avatar": "avatar_url"
-            }
-        ],
-        "timestamp": "2023-01-01T10:05:00Z"
-    }
-    ```
-*   **Status Code:** 200
-*   **Expected Status:** 200 or 201
-*   **Result:** PASS
-*   **Notes:** The request was successful, and the API returned a 200 OK status.
+A widespread issue observed across multiple endpoints is the discrepancy between the documented response schema for successful (200) responses and the actual data structure returned by the API. The OpenAPI documentation consistently specifies an empty object `{}` for the 200 response schema for many endpoints that, in practice, return non-empty JSON objects or arrays with detailed properties. This prevents accurate data type validation against the documentation and indicates a significant need for documentation updates to reflect the true structure of the API responses.
 
-#### 4. GET /api/v1/chat/get_chat_history
+Affected endpoints include:
+- `/api/v1/analytics/generate-chart-data` (GET)
+- `/api/v1/chat/get_chat_history` (GET)
+- `/api/v1/personnel/selected-personnel` (GET)
+- `/api/v1/resume/resume-analysis-results` (GET)
+- `/api/v1/bias/bias-analysis` (POST)
+- `/api/v1/chat/update_chat_history` (POST)
+- `/api/v1/email/send-email/bulk` (POST)
+- `/api/v1/interview/analyze_interview` (POST)
+- `/api/v1/personnel/selected-personnel/upload` (POST)
+- `/api/v1/project/process_url_or_path` (POST)
+- `/api/v1/project/analyze_project/` (POST)
+- `/api/v1/resume/rank-resumes` (POST)
 
-*   **Method:** GET
-*   **URL:** `http://127.0.0.1:8000/api/v1/chat/get_chat_history`
-*   **Status Code:** 200
-*   **Expected Status:** 200
-*   **Result:** PASS
-*   **Notes:** The request was successful, and the API returned a 200 OK status.
+### Performance Metrics
 
-#### 5. POST /api/v1/email/send-email/individual
+Performance metrics were not collected as part of this testing run.
 
-*   **Method:** POST
-*   **URL:** `http://127.0.0.1:8000/api/v1/email/send-email/individual`
-*   **Request Body (Generated):**
-    ```json
-    {
-        "ranked_resumes": [{}],
-        "candidate_index": 0,
-        "sender_email": "test@example.com",
-        "password": "password123",
-        "job_description": {},
-        "project_options": {},
-        "company_info": {}
-    }
-    ```
-*   **Status Code:** 200
-*   **Expected Status:** 200 or 201
-*   **Result:** PASS
-*   **Notes:** The request was successful, and the API returned a 200 OK status.
+### Recommendations for Improvements
 
-#### 6. POST /api/v1/email/send-email/bulk
+Based on the testing results, the following recommendations are made:
 
-*   **Method:** POST
-*   **URL:** `http://127.0.0.1:8000/api/v1/email/send-email/bulk`
-*   **Request Body (Generated):**
-    ```json
-    {
-        "ranked_resumes": [{}, {}],
-        "sender_email": "bulk@example.com",
-        "password": "bulkpassword",
-        "job_description": {},
-        "project_options": {},
-        "company_info": {}
-    }
-    ```
-*   **Status Code:** 200
-*   **Expected Status:** 200 or 201
-*   **Result:** PASS
-*   **Notes:** The request was successful, and the API returned a 200 OK status.
+1.  **Update OpenAPI Documentation:** Urgently update the OpenAPI specification to accurately reflect the actual response schemas for all endpoints, especially for successful (200) responses. Define the correct data types, structures, and properties for all fields returned by the API.
+2.  **Investigate and Fix Server Errors:** Investigate the root cause of the 500 Internal Server Error observed on the `/api/v1/email/send-email/individual` POST endpoint and implement a fix.
+3.  **Clarify GET Endpoint Behavior:** Clarify the expected behavior and documentation for the `/api/v1/file/get_file/{file_name}` GET endpoint. If the 404 is expected for non-existent files, this should be clearly documented along with the schema for a successful response when the file exists.
+4.  **Address File Upload Endpoint:** Provide clear documentation and potentially alternative methods for handling file uploads if `multipart/form-data` is the only method and requires specific handling or payload structures.
+5.  **Implement Robust Input Validation:** Ensure robust input validation is in place for all endpoints, returning appropriate 4xx status codes (like 422) with informative error messages when validation fails.
 
-#### 7. GET /api/v1/file/get_file/{file_name}
-
-*   **Method:** GET
-*   **URL:** `http://127.0.0.1:8000/api/v1/file/get_file/test.txt`
-*   **Status Code:** 200
-*   **Expected Status:** 200
-*   **Result:** PASS
-*   **Notes:** The request was successful, and the API returned a 200 OK status.
-
-#### 8. POST /api/v1/interview/analyze_interview
-
-*   **Method:** POST
-*   **URL:** `http://127.0.0.1:8000/api/v1/interview/analyze_interview?history_uid=hist789`
-*   **Status Code:** 200
-*   **Expected Status:** 200 or 201
-*   **Result:** PASS
-*   **Notes:** The request was successful, and the API returned a 200 OK status.
-
-#### 9. POST /api/v1/personnel/selected-personnel/upload
-
-*   **Method:** POST
-*   **URL:** `http://127.0.0.1:8000/api/v1/personnel/selected-personnel/upload`
-*   **Request Body (Generated):**
-    ```json
-    {
-        "resume_id": "resume123",
-        "profile": {
-            "name": "Jane Doe",
-            "experience": "5 years"
-        },
-        "selection_date": "2023-01-01",
-        "selection_reason": "Good fit"
-    }
-    ```
-*   **Status Code:** 200
-*   **Expected Status:** 200 or 201
-*   **Result:** PASS
-*   **Notes:** The request was successful, and the API returned a 200 OK status.
-
-#### 10. GET /api/v1/personnel/selected-personnel
-
-*   **Method:** GET
-*   **URL:** `http://127.0.0.1:8000/api/v1/personnel/selected-personnel`
-*   **Status Code:** 200
-*   **Expected Status:** 200
-*   **Result:** PASS
-*   **Notes:** The request was successful, and the API returned a 200 OK status.
-
-#### 11. POST /api/v1/project/process_url_or_path
-
-*   **Method:** POST
-*   **URL:** `http://127.0.0.1:8000/api/v1/project/process_url_or_path?compressed=false`
-*   **Request Body (Generated):**
-    ```json
-    {
-        "input_path": "https://example.com/project"
-    }
-    ```
-*   **Status Code:** 200
-*   **Expected Status:** 200 or 201
-*   **Result:** PASS
-*   **Notes:** The request was successful, and the API returned a 200 OK status.
-
-#### 12. POST /api/v1/project/analyze_project/
-
-*   **Method:** POST
-*   **URL:** `http://127.0.0.1:8000/api/v1/project/analyze_project/`
-*   **Request Body (Generated):**
-    ```json
-    {
-        "input_path": "/path/to/project"
-    }
-    ```
-*   **Status Code:** 200
-*   **Expected Status:** 200 or 201
-*   **Result:** PASS
-*   **Notes:** The request was successful, and the API returned a 200 OK status.
-
-#### 13. POST /api/v1/project/process_upload/
-
-*   **Method:** POST
-*   **URL:** `http://127.0.0.1:8000/api/v1/project/process_upload/`
-*   **Request Body (Generated):**
-    ```python
-    # Note: This is a simplified representation. Actual request requires multipart/form-data with binary file.
-    # Attempting to send a string 'dummy_file_content'
-    data = {"file": "dummy_file_content"}
-    ```
-*   **Status Code:** 422
-*   **Expected Status:** 200 or 201
-*   **Result:** FAIL
-*   **Notes:** The API returned a 422 Unprocessable Entity error. This is expected as the `api_request` tool does not directly support sending `multipart/form-data` with binary file uploads as required by the `file` field with `format: binary`. The error indicates a validation failure for the file type.
-
-#### 14. GET /api/v1/resume/resume-analysis-results
-
-*   **Method:** GET
-*   **URL:** `http://127.0.0.1:8000/api/v1/resume/resume-analysis-results`
-*   **Status Code:** 200
-*   **Expected Status:** 200
-*   **Result:** PASS
-*   **Notes:** The request was successful, and the API returned a 200 OK status.
-
-#### 15. POST /api/v1/resume/rank-resumes
-
-*   **Method:** POST
-*   **URL:** `http://127.0.0.1:8000/api/v1/resume/rank-resumes`
-*   **Request Body (Generated):**
-    ```json
-    {
-        "job_description": "We are looking for a highly motivated individual...",
-        "resumes_file": "resume_analysis_results.json"
-    }
-    ```
-*   **Status Code:** 200
-*   **Expected Status:** 200 or 201
-*   **Result:** PASS
-*   **Notes:** The request was successful, and the API returned a 200 OK status.
-
-#### 16. OPTIONS /api/v1/resume/rank-resumes
-
-*   **Method:** OPTIONS
-*   **URL:** `http://127.0.0.1:8000/api/v1/resume/rank-resumes`
-*   **Status Code:** 200
-*   **Expected Status:** 200
-*   **Result:** PASS
-*   **Notes:** The OPTIONS request was successful, indicating proper CORS preflight handling.
+This concludes the API testing report based on the provided documentation and accessible endpoints.
