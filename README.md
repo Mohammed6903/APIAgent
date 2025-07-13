@@ -86,7 +86,7 @@ To run this project locally, follow these steps:
 
    The `main.py` script will orchestrate the `documentor` and `tester` agents to interact with the specified API (e.g., `http://127.0.0.1:8000`). It will generate `api_documentation.json` and `api_testing_report.md` in the project root.
 
-*Note: Ensure you have an API running at `http://127.0.0.1:8000` with an accessible OpenAPI specification at `http://127.0.0.1:8000/openapi.json` for the full testing suite to execute.*
+*Note: Ensure you have an API running at `http://127.0.0.1:8000` with an accessible OpenAPI specification at `http://127.0.0.1:8000/openapi.json` for the full testing suite to execute without any problems.*
 
 ## 🤝 Contributing
 
